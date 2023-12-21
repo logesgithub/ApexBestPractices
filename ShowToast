@@ -1,17 +1,29 @@
-showto() {
-        sendEmail({ toAddress: this.toEmail, subject: this.ApplicationRec, body: this.message, recordId: this.ApplicationRec })
+//Js
+import { showToast } from 'lightning/platformShowToastEvent';
+
+    // Function to show toast notifications
+    showToast(title, message, variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant
+        });
+        this.dispatchEvent(event);
+    }
+
+
+        successhandler() {
+        success({ recordId:this.rec })
             .then(() => {
                 // Show success toast notification
                 this.showToast('Success', 'Email sent successfully', 'success');
-                // Clear input fields
-              //  this.clearFields();
-                this.hideModalBox();
-                this.SendMessages();
-                this.SendMessageTemplate = true;
+                
             })
             .catch(error => {
                 // Show error toast notification
                 this.showToast('Error', 'Failed to send email', 'error');
-                console.error(error);
             });
-    }
+        }
+//other two toast
+this
+
