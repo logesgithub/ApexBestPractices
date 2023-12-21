@@ -25,5 +25,7 @@ import { showToast } from 'lightning/platformShowToastEvent';
             });
         }
 //other two toast
-this
+this.showToast('warning', 'have a some problems', 'warning');
+this.showToast('info', 'operation will run in background', 'info');
+
 
