@@ -11,19 +11,18 @@ import { showToast } from 'lightning/platformShowToastEvent';
         this.dispatchEvent(event);
     }
 
-
-        successhandler() {
-        success({ recordId:this.rec })
-            .then(() => {
-                // Show success toast notification
-                this.showToast('Success', 'Email sent successfully', 'success');
-                
-            })
-            .catch(error => {
-                // Show error toast notification
-                this.showToast('Error', 'Failed to send email', 'error');
-            });
-        }
+    successhandler() {
+    success({ recordId:this.rec })
+        .then(() => {
+            // Show success toast notification
+            this.showToast('Success', 'Email sent successfully', 'success');
+            
+        })
+        .catch(error => {
+            // Show error toast notification
+            this.showToast('Error', 'Failed to send email', 'error');
+        });
+    }
 //other two toast
 this.showToast('warning', 'have a some problems', 'warning');
 this.showToast('info', 'operation will run in background', 'info');
