@@ -1,1 +1,15 @@
+@Api recordId;
+@wire(getApexData, { strRecordId: '$recordId' })
+    wiredData({ data, error }) {
+        if (data) {
+            this.results = data;
+            this.error = undefined;
+            this.handleDisplayRecords();
+            console.log('results from Closed : ', this.results);
+        } else {
+            this.results = undefined;
+            this.error = error;
+            console.log('error from Closed : ', this.error);
+        }
+    }
 
