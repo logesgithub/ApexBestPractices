@@ -1,0 +1,41 @@
+//Js
+import getProjectData from '@salesforce/apex/closedOutReadinessLWCCtrl.UpdateProjectReq';
+
+export default class ClosedOutReadinessLWC extends LightningElement {
+    @api recordId;
+    projectresult;
+    error;
+
+UpdateProjectReq(){
+        getProjectData({ RecordId:this.recordId})
+            .then((result) => {
+                this.projectresult = result;
+                console.log('projectresult1--',this.projectresult);
+                this.error = undefined;
+            })
+            .catch((error) => {
+                this.error = error;
+                console.log('projectresult2--',this.projectresult);
+                this.projectresult = undefined;
+            });
+        } 
+
+//Apex
+
+public with sharing class closedOutReadinessLWCCtrl {
+
+    
+    @AuraEnabled
+    public static String UpdateProjectReq(String RecordId) {
+     
+        System.debug(RecordId);
+        Project__c Project=[select id,name,Status__c from Project__c where id=:RecordId Limit 1];
+        Project.Status__c='Client Close-out Review';
+        try {
+            update Project;
+            System.debug(Project);
+        } catch(Exception e) {
+            System.debug(e.getMessage());
+        }
+        return 'Success';
+    }
