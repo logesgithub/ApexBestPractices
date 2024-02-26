@@ -1,0 +1,206 @@
+//HTML
+<template>   
+    <lightning-quick-action-panel header="Approval Process">             
+    <lightning-card>
+    <lightning-radio-group name="Question1" class="validate" type="radio"
+                          label="1.Question:  Is the scope of work complete?"
+                          options={options}
+                          onchange={Questionhandle} 
+                          value={value} required></lightning-radio-group>
+
+    <div if:true={ques1No}>  
+        <lightning-input name="Q1NoAns" class="commandsvalidate" type='text' label="Comments:" value={value} onchange={handleOnChange} required></lightning-input>
+    </div>
+    <lightning-radio-group name="Question2" class="validate" type="radio"
+                          label="2.Question:  Have all funds been expended?"
+                          options={options}
+                          onchange={Questionhandle} 
+                          value={value} required></lightning-radio-group>
+    <div if:true={ques2No}>
+        <lightning-input name="Q2NoAns" class="commandsvalidate" type='text' value={value} label="Comments:" onchange={handleOnChange} required></lightning-input>
+    </div>
+ 
+    <lightning-radio-group name="Question3" class="validate" type="radio"
+                          label="3.Question:  Are All Required Documents Uploaded to the system?"
+                          options={options}
+                          onchange={Questionhandle} 
+                          value={value} required></lightning-radio-group>
+    <div if:true={ques3No}> 
+        <lightning-input name="Q3NoAns" class="commandsvalidate" type='text' label="Comments:"  value={value} onchange={handleOnChange} required></lightning-input>
+    </div>
+    <div class="row">
+        <b class="header">Additional Comments:</b>
+        <lightning-textarea name="Additions" maxlength="140" variant="label-hidden"  ></lightning-textarea>
+    </div>
+    <!--lightning-button type="submit" name="submit" label="Submit" onclick={handleSuccess} ></lightning-button-->
+</lightning-card>
+
+<Div slot="footer">
+    <button class="slds-button slds-button_neutral" onclick={closeAction} title="Cancel">Cancel</button>
+    <button class="slds-button slds-button_brand" onclick={handleSuccess} title="Submit">Submit</button>
+</Div> 
+</lightning-quick-action-panel>
+</template>
+
+//JSS
+import { LightningElement,api,wire,track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { CloseActionScreenEvent } from "lightning/actions"; 
+
+export default class Tier1ApproverQuestion extends LightningElement {
+    value = '';
+    QuesAnswer;
+    Questionname;
+    question1Ans;
+    question2Ans;
+    question3Ans;
+    ques1No = false;
+    ques2No = false;    
+    ques3No = false;
+    errormessage =false;
+    Q1Commands;
+    Q2Commands;
+    Q3Commands;
+
+    get options() {
+        return [
+            { label: 'Yes', value: 'Yes' },
+            { label: 'No', value: 'No' },
+            { label: 'Others', value: 'Others' }
+        ];
+    }
+
+    closeAction() { 
+         this.dispatchEvent(new CloseActionScreenEvent());
+        } 
+    
+    Questionhandle(event) {
+        //this.QuesAnswer = event.detail.value;
+        //this.Quesionname= event.detail.name;
+        let Questionname= event.target.name;
+        let QuesAnswer = event.target.value;
+        console.log('ans--',QuesAnswer);
+        console.log('quesname--',Questionname);
+
+        if(Questionname ==='Question1'){
+            this.question1Ans = QuesAnswer;
+            console.log('question1Ans--', this.question1Ans);
+
+            if(this.question1Ans==='No'){
+                this.ques1No=true; 
+            }else if(this.question1Ans==='Others'){
+                this.ques1No=true;
+            }else{
+                this.ques1No=false;  
+            }
+        }
+        if(Questionname ==='Question2'){
+            this.question2Ans = QuesAnswer;
+            console.log('question2Ans--', this.question2Ans);
+
+            if(this.question2Ans==='No'){
+                this.ques2No=true;
+            }else if(this.question2Ans==='Others'){
+                this.ques2No=true;   
+            }else{
+                this.ques2No=false;
+            }
+        }
+        if(Questionname ==='Question3'){
+            this.question3Ans = QuesAnswer;
+            console.log('question3Ans--', this.question1Ans);
+
+            if(this.question3Ans==='No'){
+                this.ques3No=true;              
+            }else if(this.question3Ans==='Others'){
+                this.ques3No=true;
+            }else{
+                this.ques3No=false; 
+            }
+        }
+
+     
+    }
+    handleOnChange(event){
+        let name= event.target.name;
+        let Value = event.target.value;
+        if(name==='Q1NoAns'){
+            this.Q1Commands=Value;
+            console.log('Q1Commands--', this.Q1Commands);
+        }
+        if(name==='Q2NoAns'){
+            this.Q2Commands=Value;
+            console.log('Q2Commands--', this.Q2Commands);
+        }
+        if(name==='Q3NoAns'){
+            this.Q3Commands=Value;
+            console.log('Q3Commands--', this.Q3Commands);
+        }
+
+    }
+
+    isInputValid() {
+        let isValid = true;
+        let inputFields = this.template.querySelectorAll('.validate');
+        inputFields.forEach(inputField => {
+            if(!inputField.checkValidity()) {
+                inputField.reportValidity();
+                isValid = false;
+            }
+        });
+        return isValid;
+    }
+    isInputCommandValid() {
+        let isValidcommand = true;
+        let inputcmdFields = this.template.querySelectorAll('.commandsvalidate');
+        inputcmdFields.forEach(inputFieldcmd => {
+            if(!inputFieldcmd.checkValidity()) {
+                inputFieldcmd.reportValidity();
+                isValidcommand = false;
+            }
+        });
+        return isValidcommand;
+    }
+    
+    handleSuccess(){
+        
+        if(this.isInputValid()){
+            if(this.question1Ans==='No' && this.question2Ans==='No' && this.question3Ans==='No'){
+                console.log('savehandle--');
+                this.showToast('Error', 'Please ensure that all required close out eligibiltiy conditions have been met and try again when ready.', 'error');
+            }else if(this.question1Ans!=null && this.question2Ans!=null && this.question3Ans!=null ){
+                console.log('savehandle1--');
+               
+                    console.log('savehandle2--');
+                    if(this.isInputCommandValid()){
+                       // if(this.Q1NoAns == true && this.Q2NoAns == true && this.Q3NoAns == true){
+                        console.log('savehandle3--');
+                        this.showToast('Success', 'Approval is Submitted', 'Success'); 
+                        this.closeAction();
+                      //  }
+                    }
+                
+                
+            }
+        }
+
+    }
+
+    showToast(title, message, variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant
+        });
+       // this.dispatchEvent(event);
+    }
+
+}
+
+//Metajs
+<isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordAction</target> 
+    </targets>
